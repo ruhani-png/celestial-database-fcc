@@ -51,7 +51,9 @@ CREATE TABLE public.blackhole (
     blackhole_id integer NOT NULL,
     gravity integer,
     galaxy_id integer,
-    wormhole boolean DEFAULT false NOT NULL
+    wormhole boolean DEFAULT false NOT NULL,
+    name character varying(255),
+    scary_level integer
 );
 
 
@@ -85,10 +87,10 @@ ALTER SEQUENCE public.blackhole_blackhole_id_seq OWNED BY public.blackhole.black
 
 CREATE TABLE public.galaxy (
     galaxy_id integer NOT NULL,
-    speed integer,
     description text,
     name character varying(255) NOT NULL,
-    is_pretty character varying(255) DEFAULT 'yes'::character varying NOT NULL
+    is_pretty character varying(255) DEFAULT 'yes'::character varying NOT NULL,
+    speed integer
 );
 
 
@@ -121,7 +123,7 @@ ALTER SEQUENCE public.galaxy_galaxy_id_seq OWNED BY public.galaxy.galaxy_id;
 --
 
 CREATE TABLE public.moon (
-    mood_id integer NOT NULL,
+    moon_id integer NOT NULL,
     name character varying(255) NOT NULL,
     has_water boolean NOT NULL,
     planet_id integer NOT NULL,
@@ -150,7 +152,7 @@ ALTER TABLE public.moon_mood_id_seq OWNER TO freecodecamp;
 -- Name: moon_mood_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: freecodecamp
 --
 
-ALTER SEQUENCE public.moon_mood_id_seq OWNED BY public.moon.mood_id;
+ALTER SEQUENCE public.moon_mood_id_seq OWNED BY public.moon.moon_id;
 
 
 --
@@ -242,10 +244,10 @@ ALTER TABLE ONLY public.galaxy ALTER COLUMN galaxy_id SET DEFAULT nextval('publi
 
 
 --
--- Name: moon mood_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
+-- Name: moon moon_id; Type: DEFAULT; Schema: public; Owner: freecodecamp
 --
 
-ALTER TABLE ONLY public.moon ALTER COLUMN mood_id SET DEFAULT nextval('public.moon_mood_id_seq'::regclass);
+ALTER TABLE ONLY public.moon ALTER COLUMN moon_id SET DEFAULT nextval('public.moon_mood_id_seq'::regclass);
 
 
 --
@@ -266,18 +268,21 @@ ALTER TABLE ONLY public.star ALTER COLUMN star_id SET DEFAULT nextval('public.st
 -- Data for Name: blackhole; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
+INSERT INTO public.blackhole VALUES (1, 2385, 1, false, 'A', 258);
+INSERT INTO public.blackhole VALUES (2, 2430, 4, false, 'B', 25);
+INSERT INTO public.blackhole VALUES (3, 143284, 5, false, 'C', 58);
 
 
 --
 -- Data for Name: galaxy; Type: TABLE DATA; Schema: public; Owner: freecodecamp
 --
 
-INSERT INTO public.galaxy VALUES (1, NULL, NULL, 'Andromeda', 'yes');
-INSERT INTO public.galaxy VALUES (2, NULL, NULL, 'Milky Way', 'yes');
-INSERT INTO public.galaxy VALUES (3, NULL, NULL, 'Black Eye', 'yes');
-INSERT INTO public.galaxy VALUES (4, NULL, NULL, 'Sombrero', 'yes');
-INSERT INTO public.galaxy VALUES (5, NULL, NULL, 'Sunflower', 'yes');
-INSERT INTO public.galaxy VALUES (6, NULL, NULL, 'Whirlpool', 'yes');
+INSERT INTO public.galaxy VALUES (1, NULL, 'Andromeda', 'yes', 24850);
+INSERT INTO public.galaxy VALUES (2, NULL, 'Milky Way', 'yes', 2485);
+INSERT INTO public.galaxy VALUES (3, NULL, 'Black Eye', 'yes', 2450);
+INSERT INTO public.galaxy VALUES (4, NULL, 'Sombrero', 'yes', 24820);
+INSERT INTO public.galaxy VALUES (5, NULL, 'Sunflower', 'yes', 4850);
+INSERT INTO public.galaxy VALUES (6, NULL, 'Whirlpool', 'yes', 22850);
 
 
 --
@@ -341,7 +346,7 @@ INSERT INTO public.star VALUES (6, 13520, 'Canes Venatici', 'red', 5);
 -- Name: blackhole_blackhole_id_seq; Type: SEQUENCE SET; Schema: public; Owner: freecodecamp
 --
 
-SELECT pg_catalog.setval('public.blackhole_blackhole_id_seq', 1, false);
+SELECT pg_catalog.setval('public.blackhole_blackhole_id_seq', 3, true);
 
 
 --
@@ -381,11 +386,27 @@ ALTER TABLE ONLY public.blackhole
 
 
 --
+-- Name: blackhole blackhole_scary_level_key; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.blackhole
+    ADD CONSTRAINT blackhole_scary_level_key UNIQUE (scary_level);
+
+
+--
 -- Name: galaxy galaxy_pkey; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
 --
 
 ALTER TABLE ONLY public.galaxy
     ADD CONSTRAINT galaxy_pkey PRIMARY KEY (galaxy_id);
+
+
+--
+-- Name: galaxy galaxy_speed_key; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.galaxy
+    ADD CONSTRAINT galaxy_speed_key UNIQUE (speed);
 
 
 --
@@ -401,7 +422,15 @@ ALTER TABLE ONLY public.moon
 --
 
 ALTER TABLE ONLY public.moon
-    ADD CONSTRAINT moon_pkey PRIMARY KEY (mood_id);
+    ADD CONSTRAINT moon_pkey PRIMARY KEY (moon_id);
+
+
+--
+-- Name: planet planet_name_key; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.planet
+    ADD CONSTRAINT planet_name_key UNIQUE (name);
 
 
 --
@@ -418,6 +447,14 @@ ALTER TABLE ONLY public.planet
 
 ALTER TABLE ONLY public.star
     ADD CONSTRAINT star_pkey PRIMARY KEY (star_id);
+
+
+--
+-- Name: star star_radius_key; Type: CONSTRAINT; Schema: public; Owner: freecodecamp
+--
+
+ALTER TABLE ONLY public.star
+    ADD CONSTRAINT star_radius_key UNIQUE (radius);
 
 
 --
